@@ -3,14 +3,16 @@ Código para o desafio Noverde. Link para o desafio: https://github.com/noverde/
 
 ## Como executar:
 É necessário ter o AWS CLI e o SAM Framework CLI instalados na maquina.
-Download do AWS Cli:
-Download do SAM Framework CLI:
+
+Download do AWS Cli: https://aws.amazon.com/pt/cli/
+
+Download do SAM Framework CLI: https://aws.amazon.com/serverless/sam/
 
 Apos instalar os dois, rode o comando `aws configure` e adicione os tokens de alguma conta de servico da AWS.
 
-Antes de fazer o build da aplicacao, adicione um valor para a X_API_KEY na ***Linha 87*** do arquivo template.yaml
+Antes de fazer o build da aplicação, adicione um valor para a X_API_KEY na ***Linha 87*** do arquivo template.yaml
 
-Para fazer o build e deploy da aplicacao use os comandos:
+Para fazer o build e deploy da aplicação use os comandos:
 `sam build`
 seguido de 
 `sam deploy --guided` (na primeira vez, após isso pode executar sem o --guided)
