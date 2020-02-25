@@ -19,5 +19,7 @@ No output do terminal, após o comando de `sam deploy` aparecerão as urls das A
 
 ## Fluxo
 Ao fazer um POST, é criado um registro no DynamoDB com os dados enviados (após validação), neste momento também é inserida uma mensagem na fila, com o ID do registro. Esse mesmo ID é enviado como resposta da requisição.
-Outra lambda é ativada quando uma mensagem é colocada na fila e essa lambda é a responsável por fazer a validação da Política de Crédito.
+
+Uma lambda é ativada quando uma mensagem é colocada na fila e essa lambda é a responsável por fazer a validação da Política de Crédito.
+
 Outra lambda é responsável por fazer a consulta dos dados.
