@@ -3,7 +3,7 @@ version = 0.1
 [default.deploy]
 [default.deploy.parameters]
 stack_name = "noverde-challenge"
-s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1xhlhqxdab1te"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-49sjmomssikb1te"
 s3_prefix = "noverde-challenge"
 region = "sa-east-1"
 capabilities = "CAPABILITY_IAM"
