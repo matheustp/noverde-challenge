@@ -8,7 +8,7 @@ Download do SAM Framework CLI:
 
 Apos instalar os dois, rode o comando `aws configure` e adicione os tokens de alguma conta de servico da AWS.
 
-Antes de fazer o build da aplicacao, adicione um valor para a X_API_KEY na ***Linha 71*** do arquivo template.yaml
+Antes de fazer o build da aplicacao, adicione um valor para a X_API_KEY na ***Linha 87*** do arquivo template.yaml
 
 Para fazer o build e deploy da aplicacao use os comandos:
 `sam build`
