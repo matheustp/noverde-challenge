@@ -1,0 +1,111 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  desafio-noverde
+  Codigo feito para o desafio da Noverde, utilizando o framework SAM.
+
+Globals:
+  Function:
+    Timeout: 180
+
+Resources:
+  LoanPostFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: apis/
+      Handler: app.loan_post_handler
+      Runtime: python3.8
+      Policies: 
+        - AmazonDynamoDBFullAccess
+        - AmazonSQSFullAccess
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref LoanTable
+          REGION: !Sub "${AWS::Region}"
+          QUEUE_NAME: "loan-queue"
+      Events:
+        LoanPost:
+          Type: Api
+          Properties:
+            Path: /loan
+            Method: post
+  LoanGetFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: apis/
+      Handler: app.loan_get_handler
+      Runtime: python3.8
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref LoanTable
+          REGION: !Sub "${AWS::Region}"
+      Events:
+        LoanGet:
+          Type: Api 
+          Properties:
+            Path: /loan/{id}
+            Method: get
+  LoanTable:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      AttributeDefinitions: 
+        - AttributeName: id
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+  LoanQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: loan-queue
+      RedrivePolicy: 
+        deadLetterTargetArn: !GetAtt LoanDLQueue.Arn
+        maxReceiveCount: 5
+      VisibilityTimeout: 180
+  LoanDLQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: loan-dlq
+  CreditEngineFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: backend/
+      Handler: app.credit_engine_handler
+      Runtime: python3.8
+      Policies: 
+        - AmazonDynamoDBFullAccess
+        - AmazonSQSFullAccess
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref LoanTable
+          X_API_KEY: "INSIRA_A_CHAVE_DE_API_AQUI"
+          REGION: !Sub "${AWS::Region}"
+      Events:
+        MessageOnQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt LoanQueue.Arn
+            BatchSize: 1
+            Enabled: true
+Outputs:
+  LoanPostAPIURL:
+    Description: "API Gateway endpoint URL for Prod stage for POST Loan function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/loan/"
+  LoanGetAPIURL:
+    Description: "API Gateway endpoint URL for Prod stage for GET Loan function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/loan/:id"
+  LoanPostFunction:
+    Description: "Loan Post Lambda Function ARN"
+    Value: !GetAtt LoanPostFunction.Arn
+  LoanGetFunction:
+    Description: "Loan Get Lambda Function ARN"
+    Value: !GetAtt LoanGetFunction.Arn
+  CreditEngineFunction:
+    Description: "Credit Engine Lambda Function ARN"
+    Value: !GetAtt CreditEngineFunction.Arn
